@@ -3,19 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP8266 Control</title>
+    <title>Home Devices Control</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Control ESP8266</h1>
-    <button onclick="sendRequest('/led/on')">Turn LED On</button>
-    <button onclick="sendRequest('/led/off')">Turn LED Off</button>
+    <h1>Home Devices Control</h1>
+    <div class="button-container">
+        <button id="corridor-button" onclick="toggleLED('corridor')" class="control-button">LED Corridor Control: On</button>
+    </div>
 
     <script>
-        function sendRequest(endpoint) {
+        let corridorState = false;
+
+        function toggleLED(device) {
+            let state, button, endpoint;
+            if (device === 'corridor') {
+                state = corridorState;
+                button = document.getElementById('corridor-button');
+            }
+
+            endpoint = state ? '/led/off' : '/led/on';
+
             fetch(`http://sterbenhomeserver.ddns.net${endpoint}`)
-                .then(response => response.text())
-                .then(data => alert(data))
                 .catch(error => console.error('Error:', error));
+
+            // Toggle state
+            if (device === 'corridor') {
+                corridorState = !corridorState;
+            }
+            
+            // Update button text
+            button.textContent = `${button.textContent.split(':')[0]}: ${state ? 'On' : 'Off'}`;
         }
     </script>
 </body>
